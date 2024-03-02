@@ -1,8 +1,7 @@
 from cv2 import VideoWriter, VideoWriter_fourcc, destroyAllWindows
 from math import ceil, floor
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib import cm
+from matplotlib import pyplot as plt, cm 
 from moviepy.video.io.bindings import mplfig_to_npimage
 from mlxtend.plotting import plot_decision_regions
 import torch
@@ -13,7 +12,7 @@ from mpl_toolkits.mplot3d import Axes3D
 colormap = cm.get_cmap("rainbow")
 
 
-def plot_grid(
+def plot_grid_func(
     n_lines: int,
     line_points: int,
     ax,
@@ -168,7 +167,7 @@ class geo_viz:
                     y_max = y_max_
                     
 
-                    lines_identity = plot_grid(10,10,ax, map_func = None, x_min = x_min, x_max = x_max, y_min = y_min, y_max = y_max) 
+                    lines_identity = plot_grid_func(10,10,ax, map_func = None, x_min = x_min, x_max = x_max, y_min = y_min, y_max = y_max) 
                     tmp_grid = lines_identity
 
                 
@@ -234,9 +233,9 @@ class geo_viz:
                             #ax.plot(out[:,0],np.zeros_like(out) + 0, markers[i], alpha = 0.75, markersize= 5) ## adapt with input vector y_label
                      pass            
                 elif dim == 2:       
-                    tmp_grid = plot_grid(10,10,ax, map_func = transformation, starting_grid=tmp_grid)
+                    tmp_grid = plot_grid_func(10,10,ax, map_func = transformation, starting_grid=tmp_grid)
                 elif dim == 3: 
-                    tmp_grid = plot_grid(10,10,ax, map_func = transformation, starting_grid=tmp_grid, dim = 3)
+                    tmp_grid = plot_grid_func(10,10,ax, map_func = transformation, starting_grid=tmp_grid, dim = 3)
                 else: 
                     raise Exception(f"dim {dim} not allowed")
                 #lines_identity = plot_grid(x_min,x_max,y_min,y_max,10,10,ax, map_func = None)
