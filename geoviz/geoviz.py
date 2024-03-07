@@ -65,10 +65,10 @@ def plot_grid_func(
         if dim ==2: 
             p = i / (len(lines) - 1)  # Normalize to 0-1.
             # Get the line color from the colormap.
-            ax.plot(line[:,0], line[:,1], color=colormap(p))
+            ax.plot(line[:,0], line[:,1], color=colormap(p), linewidth = 0.7)
         elif dim ==3: 
             p = i / (len(lines) - 1) 
-            ax.plot3D(line[:,0], line[:,1], line[:,2],color=colormap(p))
+            ax.plot3D(line[:,0], line[:,1], line[:,2],color=colormap(p), linewidth = 0.7)
         else: 
             raise Exception("")
 
@@ -241,9 +241,8 @@ class geo_viz:
                 #lines_identity = plot_grid(x_min,x_max,y_min,y_max,10,10,ax, map_func = None)
 
             ax.set_title(key)
-            fig.suptitle(f'Epoch {epoch}')
-            
-            plt.tight_layout()
+            fig.suptitle(f'Epoch {epoch}')          
+            fig.tight_layout(rect=[0, 0, 1, 0.96])
 
         return fig 
 
