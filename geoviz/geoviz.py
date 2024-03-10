@@ -1,4 +1,13 @@
+"""
+Geoviz Module for the geometric visualization of transformations inside 
+a feedforward neural network.
+Author: Francesco Pierpaoli
+Email: francescopierpaoli96@gmail.com
+"""
 from math import ceil, floor
+from typing import List, Tuple
+from collections.abc import Callable
+from copy import deepcopy
 from cv2 import VideoWriter, VideoWriter_fourcc, destroyAllWindows
 import numpy as np
 from matplotlib import pyplot as plt, cm
@@ -6,11 +15,8 @@ import matplotlib.figure
 from moviepy.video.io.bindings import mplfig_to_npimage
 from mlxtend.plotting import plot_decision_regions
 import torch
-from copy import deepcopy
 import torch.nn as nn
 from mpl_toolkits.mplot3d import Axes3D
-from typing import List, Tuple
-from collections.abc import Callable
 import imageio.v3 as iio
 
 colormap = cm.get_cmap("rainbow")
@@ -36,10 +42,12 @@ def plot_grid_func(
         n_lines (int): number of lines per axis in the grid.
         line_points (int): number of points sampled for each line.
         ax (plt.Axes): matplolib axes to plot the grid on.
-        map_func (Callable[[torch.Tensor], torch.Tensor], optional): Transformation for starting_grid. Defaults to nn.Identity().
-        starting_grid (List[np.ndarray] | None, optional): Starting grid to transform. If None, it is created 
-        a standard regular grid. Defaults to None.
-        dim (int, optional): Dimension of the euclidean space for the grid, can be 2 or 3. Defaults to 2.
+        map_func (Callable[[torch.Tensor], torch.Tensor], optional): Transformation for starting_grid. 
+        Defaults to nn.Identity().
+        starting_grid (List[np.ndarray] | None, optional): Starting grid to transform. 
+        If None, it is created a standard regular grid. Defaults to None.
+        dim (int, optional): Dimension of the euclidean space for the grid, can be 2 or 3. 
+        Defaults to 2.
         x_min (float | None, optional): Minimum x value for build the regular grid. Defaults to None.
         x_max (float | None, optional): Maximum x value for build the regular grid. Defaults to None.
         y_min (float | None, optional): Minimum y value for build the regular grid. Defaults to None.
@@ -84,7 +92,7 @@ def plot_grid_func(
             ax.plot3D(line[:, 0], line[:, 1], line[:, 2],
                       color=colormap(p), linewidth=0.7)
         else:
-            raise Exception("The only dimensions allowed are 2 or 3.")
+            raise ValueError("The only dimensions allowed are 2 or 3.")
 
     return lines
 
@@ -166,6 +174,9 @@ class geo_viz:
 
         self.transformations = model.transformations
         self.n_epochs = len(self.transformations)
+        self.epoch = None
+        self.annotate = None
+        self.plot_grid = None
 
         self.X_train, self.y_train = self.__validate_array(
             X_train), self.__validate_array(y_train)
@@ -173,7 +184,7 @@ class geo_viz:
         for idx, (layer, n_neurons) in enumerate(model.neurons_count().items()):
             if n_neurons > 3:
                 # Implement T-SNE or something like this?
-                raise Exception(
+                raise ValueError(
                     f"Layer n. {idx} ({layer}) has more than 3 neurons. Impossible to plot.")
 
         self.n_layers = len(model.neurons_count())
@@ -183,9 +194,9 @@ class geo_viz:
         if not isinstance(X, np.ndarray):
             try:
                 X = np.array(X)
-            except:
+            except Exception as exc:
                 raise Exception(
-                    "Impossible to cast X_train and/or y_train to numpy array.")
+                    "Impossible to cast X_train and/or y_train to numpy array.") from exc
         return X
 
     def plot(self,
@@ -238,7 +249,7 @@ class geo_viz:
             elif dim == 3:
                 raise NotImplementedError
             else:
-                raise Exception(f"Dim {dim} not allowed")
+                raise ValueError(f"Dim {dim} not allowed")
 
         if self.annotate:
             step = int(len(self.X_train)*self.annotate) + 1  # improve this
@@ -248,7 +259,7 @@ class geo_viz:
                 elif dim == 3:
                     raise NotImplementedError
                 else:
-                    raise Exception(f"Dim {dim} not allowed")
+                    raise ValueError(f"Dim {dim} not allowed")
 
         if self.plot_grid:  # adapt plot grid to use pytorch model.transformations functions
 
@@ -302,7 +313,7 @@ class geo_viz:
                     ax.scatter(out[:, 0], out[:, 1], out[:, 2],
                                marker=markers[i], alpha=0.75, s=5)
                 else:
-                    raise Exception(f"Dim {dim} not allowed")
+                    raise ValueError(f"Dim {dim} not allowed")
 
             if self.annotate:
                 step = int(len(self.X_train)*self.annotate) + 1  # improve this
@@ -316,7 +327,7 @@ class geo_viz:
                         ax.text(output.numpy()[i, 0], output.numpy()[i, 1], output.numpy()[
                                 i, 2], txt, zdir='x', fontsize='xx-small')
                     else:
-                        raise Exception(f"Dim {dim} not allowed")
+                        raise ValueError(f"Dim {dim} not allowed")
 
             if self.plot_grid:
 
@@ -330,7 +341,7 @@ class geo_viz:
                     tmp_grid = plot_grid_func(
                         10, 10, ax, map_func=transformation, starting_grid=tmp_grid, dim=3)
                 else:
-                    raise Exception(f"Dim {dim} not allowed")
+                    raise ValueError(f"Dim {dim} not allowed")
                 # lines_identity = plot_grid(x_min,x_max,y_min,y_max,10,10,ax, map_func = None)
 
             ax.set_title(key)
@@ -404,8 +415,6 @@ class geo_viz:
 
         out.release()
         destroyAllWindows()
-
-        return
 
     def predict(self, x):
         """
