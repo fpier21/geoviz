@@ -19,7 +19,7 @@ The library requires torch to be installed. In case you haven't it already, you 
 pip install . --extra-index-url https://download.pytorch.org/whl/cpu
 ```
 
-If instead you want the full CUDA platform pytorch just execute: 
+If instead you want geoviz together with full CUDA platform pytorch just execute: 
 
 ```bash
 pip install .
