@@ -2,7 +2,9 @@
 # geoviz
  **Geoviz is a library with learning purposes for geometric visualization of the transformations inside a feedforward neural network.**
 
-<img src="./docs/img/Figure 299_v2.png" alt="Example img" width="450px">
+<!-- <img src="./docs/img/Figure 299_v2.png" alt="Example img" width="700px"> -->
+
+<img src="./docs/gif/example.gif" alt="Example gif" width="700px">
 
 ## Installation
 To install geoviz, first download or clone the code from the repository: 
