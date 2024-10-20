@@ -5,4 +5,5 @@ moviepy
 mlxtend
 torch
 imageio
+git+https://github.com/fpier21/highdimensional-decision-boundary-plot@dev#egg=highdimensional-boundary
 #mpl-tools
