@@ -1,9 +1,7 @@
-opencv-python
-numpy
-matplotlib
+numpy==1.26.0
+matplotlib==3.1.1
 moviepy
 mlxtend
 torch
 imageio
-git+https://github.com/fpier21/highdimensional-decision-boundary-plot@dev#egg=highdimensional-boundary
-#mpl-tools
+highdimensional-boundary @ git+https://github.com/fpier21/highdimensional-decision-boundary-plot@dev#egg=highdimensional-boundary

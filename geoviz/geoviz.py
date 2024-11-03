@@ -9,7 +9,6 @@ from math import ceil, floor
 from typing import List, Tuple, Any
 from collections.abc import Callable
 from copy import deepcopy
-from cv2 import VideoWriter, VideoWriter_fourcc, destroyAllWindows
 import numpy as np
 from matplotlib import pyplot as plt, cm
 import matplotlib.figure
@@ -325,8 +324,9 @@ class geo_viz:
         if (
             self.plot_grid
         ):  # adapt plot grid to use pytorch model.transformations functions
+            plot_grid_3d=True
             if dim >= 3: #TODO: Implement for dim>=3
-                pass
+                plot_grid_3d=False #Remove this when implemented for dim>3
             else:
                 x_min_, x_max_ = np.min(self.X_train[:, 0]), np.max(self.X_train[:, 0])
                 y_min_, y_max_ = np.min(self.X_train[:, 1]), np.max(self.X_train[:, 1])
@@ -450,20 +450,22 @@ class geo_viz:
                     # ax.plot(out[:,0],np.zeros_like(out) + 0, markers[i], alpha = 0.75, markersize= 5) ## adapt with input vector y_label
                     pass
                 elif dim == 2:
-                    tmp_grid = plot_grid_func(
-                        10, 10, ax, map_func=transformation, starting_grid=tmp_grid
-                    )
+                    if plot_grid_3d: #remove when implemented for dim>3
+                        tmp_grid = plot_grid_func(
+                            10, 10, ax, map_func=transformation, starting_grid=tmp_grid
+                        )
                 elif dim == 3:
-                    tmp_grid = plot_grid_func(
-                        10,
-                        10,
-                        ax,
-                        map_func=transformation,
-                        starting_grid=tmp_grid,
-                        dim=3,
-                    )
+                    if plot_grid_3d: #Remove this when implemented for dim>3
+                        tmp_grid = plot_grid_func(
+                            10,
+                            10,
+                            ax,
+                            map_func=transformation,
+                            starting_grid=tmp_grid,
+                            dim=3,
+                        )
                 else: #TODO: implement for dim>3
-                    pass
+                    plot_grid_3d=False #Remove this when implemented for dim>3
                 # lines_identity = plot_grid(x_min,x_max,y_min,y_max,10,10,ax, map_func = None)
 
             ax.set_title(key + " " + title)
@@ -514,41 +516,6 @@ class geo_viz:
                 fig.clf()
                 plt.close(fig)
         iio.imwrite(path_out, images, duration=duration, loop=loop)
-
-    def make_video(
-        self,
-        fps=1,
-        title="video_out.avi",
-        step=None,
-        figsize=None,
-        annotate=False,
-        plot_grid=False,
-    ):
-
-        if step is None:
-            step = int(self.n_epochs / 10)
-
-        for epoch in range(self.n_epochs):
-            if epoch % step == 0 or epoch + 1 == self.n_epochs:
-                img = self.plot(
-                    epoch, figsize=figsize, annotate=annotate, plot_grid=plot_grid
-                )
-                if epoch == 0:
-                    figsize_int = img.get_size_inches() * img.dpi
-                    out = VideoWriter(
-                        title,
-                        VideoWriter_fourcc(*"DIVX"),
-                        fps,
-                        tuple(figsize_int.astype(int)),
-                    )
-                out.write(mplfig_to_npimage(img))
-
-                # closing figure
-                img.clf()
-                plt.close(img)
-
-        out.release()
-        destroyAllWindows()
 
     def predict(self, x):
         """
