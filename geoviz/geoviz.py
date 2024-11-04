@@ -8,6 +8,7 @@ import warnings
 from math import ceil, floor
 from typing import List, Tuple, Any
 from collections.abc import Callable
+from tqdm import tqdm
 from copy import deepcopy
 import numpy as np
 from matplotlib import pyplot as plt, cm
@@ -208,11 +209,6 @@ class geo_viz:
                     )
 
         self.n_layers = len(model.neurons_count())
-        if DR is not None:  # fit on input points if necessary
-            try:
-                self.DR.transform([self.X_train[0]])
-            except:
-                self.DR.fit(self.X_train)
 
     @staticmethod
     def __validate_array(X):
@@ -278,7 +274,8 @@ class geo_viz:
         else:
             ax = fig.add_subplot(nrows, ncols, 1)
             if self.DR is not None:
-                X_train_embedded = self.DR.transform(self.X_train)
+                fitted_DR=self.DR.fit(self.X_train)
+                X_train_embedded = fitted_DR.transform(self.X_train)
                 title = f"Input points [Projected with {self.DR.__class__.__name__}]"
             else:
                 title = "Input points [No projection provided]"
@@ -358,7 +355,7 @@ class geo_viz:
             if (self.DR is not None) and (self.estimate_decision_boundary):
                 warnings.warn(
                     """Estimating the decision boundary is done via the experimental library
-                    highdimensional_boundary, and it may takes a while. 
+                    highdimensional_boundary, and it may take a while. 
                     """)
                 db = DBPlot(
                     self, self.DR, verbose=False, n_decision_boundary_keypoints=45
@@ -509,7 +506,7 @@ class geo_viz:
         if step is None:
             step = int(self.n_epochs / 10)
         images = []
-        for epoch in range(self.n_epochs):
+        for epoch in tqdm(range(self.n_epochs)):
             if epoch % step == 0 or epoch + 1 == self.n_epochs:
                 fig = self.plot(epoch, **kwargs)
                 images.append(mplfig_to_npimage(fig))
@@ -521,7 +518,6 @@ class geo_viz:
         """
         Method to mimic pytorch nn.Module method in order to use the mlxtend.plot_decision_regions method.
         """
-
         x = torch.tensor(x, dtype=torch.float32)
         for trasf in self.transformations[self.epoch].values():
             x = trasf(x)
