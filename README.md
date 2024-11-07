@@ -1,6 +1,6 @@
 
 # geoviz
- **Geoviz is a pytorch-compatible library with learning purposes for the geometric visualization of the transformations inside a feedforward neural network.**
+ **Geoviz is a pytorch-compatible library with learning purposes for the geometric visualization of the transformations inside simple feedforward neural networks.**
 
 <!-- <img src="./docs/img/Figure 299_v2.png" alt="Example img" width="700px"> -->
 <img src="./docs/gif/example.gif" alt="Example gif" width="600px">
@@ -224,7 +224,7 @@ The API for the dimensionality reduction object is scikit-learn compatibile and 
 from sklearn.decomposition import PCA
 
 visualizator = geo_viz(X_train=x_train,
-                       Y_train=y_train,
+                       y_train=y_train,
                        model=model, 
                        DR=PCA(n_components=2), 
                        estimate_decision_boundary=True
